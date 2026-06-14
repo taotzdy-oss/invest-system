@@ -1,0 +1,32 @@
+{
+    "_comment": "本地个人投资管理系统配置 — 所有旧项目路径均为只读引用，系统不会修改原文件。",
+    "legacy_root": "/Users/gegezi/Desktop/投资",
+    "legacy": {
+        "knowledge_base_dir": "锋芒策略解析知识库_20260606",
+        "kb_index_md": "锋芒策略解析知识库_20260606/00_解析成果索引.md",
+        "kb_main_md": "锋芒策略解析知识库_20260606/03_知识库/锋芒A股策略知识库.md",
+        "kb_manifest_json": "锋芒策略解析知识库_20260606/parse_manifest.json",
+        "review_root": "锋芒爆点_复盘迭代",
+        "review_ledger_csv": "锋芒爆点_复盘迭代/数据/复盘样本台账.csv",
+        "review_daily_dir": "锋芒爆点_复盘迭代/每日复盘",
+        "review_buckets_dir": "锋芒爆点_复盘迭代/数据/晋级分层",
+        "review_template_md": "锋芒爆点_复盘迭代/模板/每日复盘模板.md",
+        "review_experience_md": "锋芒爆点_复盘迭代/经验沉淀/锋芒爆点_复盘经验库.md",
+        "strategy_iteration_md": "锋芒爆点_复盘迭代/策略迭代/锋芒爆点_策略迭代日志.md",
+        "ladder_data_dir": "A股连板天梯/data",
+        "ladder_chart_html": "A股连板天梯/charts/连板天梯_持续跟踪.html",
+        "rebuild_buckets_script": "锋芒爆点_复盘迭代/数据/晋级分层/rebuild_promotion_buckets.py",
+        "stock_pick_pool_glob": "锋芒爆点_*_打板观察池",
+        "stock_pick_script_glob": "generate_fengmang_breakout_*.py"
+    },
+    "server": {
+        "host": "127.0.0.1",
+        "port": 8787,
+        "open_browser": true
+    },
+    "git": {
+        "remote_name": "origin",
+        "default_branch": "main",
+        "commit_prefix": "chore: "
+    }
+}

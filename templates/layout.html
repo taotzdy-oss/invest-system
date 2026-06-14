@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }} - 投资管理系统</title>
+<link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><a href="/">📈 投资管理系统</a><span class="brand-sub">本地私有 · 锋芒爆点对接</span></div>
+  <nav class="nav">
+    <a class="{{ nav_home_active }}" href="/">总览</a>
+    <a class="{{ nav_strategy_active }}" href="/strategy">策略</a>
+    <a class="{{ nav_picks_active }}" href="/picks">每日选股</a>
+    <a class="{{ nav_review_active }}" href="/review">复盘</a>
+    <a class="{{ nav_kb_active }}" href="/kb">知识库</a>
+  </nav>
+</header>
+<main class="container">
+{{ body|raw }}
+</main>
+<footer class="footer">
+  <span>© 个人本地投资管理系统</span>
+  <span>对接 <code>/Users/gegezi/Desktop/投资</code>（只读）</span>
+  <span>数据落地 <code>data/system.db</code></span>
+</footer>
+<script src="/static/js/app.js"></script>
+</body>
+</html>

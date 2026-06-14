@@ -1,0 +1,25 @@
+# 数据落地
+data/system.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+
+# macOS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# 日志 / 临时
+*.log
+*.tmp
+.coverage
+.pytest_cache/
