@@ -1,8 +1,14 @@
-# 数据落地
+# 数据落地（用户本地数据库 + 锁 + 日志，不上云）
 data/system.db
 data/*.db-journal
 data/*.db-wal
 data/*.db-shm
+data/locks/
+data/*.log
+data/*.err
+
+# 备份目录
+backups/
 
 # Python
 __pycache__/

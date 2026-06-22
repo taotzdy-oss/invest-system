@@ -13,7 +13,7 @@ from core.router import router
 from core.templates import layout
 
 
-@router.route("/")
+@router.route("/legacy")
 def home(req):
     pools = sp_adapter.list_pools()
     review_days = rv_adapter.list_review_days()

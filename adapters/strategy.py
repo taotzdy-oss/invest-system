@@ -31,7 +31,7 @@ class StrategyScript:
 
 
 def _extract_top_level_assignments(src: str) -> dict:
-    """用 AST 取得脚本顶层简单常量赋值。"""
+    """用 AST 取得脚本顶层简单常量赋值；也兼容形如 base.SOURCE_DATE = "..." 的注入。"""
     out: dict = {}
     try:
         tree = ast.parse(src)
@@ -43,15 +43,18 @@ def _extract_top_level_assignments(src: str) -> dict:
         if len(node.targets) != 1:
             continue
         tgt = node.targets[0]
-        if not isinstance(tgt, ast.Name):
-            continue
-        if tgt.id not in KEYS_TO_EXTRACT:
+        attr_name = None
+        if isinstance(tgt, ast.Name) and tgt.id in KEYS_TO_EXTRACT:
+            attr_name = tgt.id
+        elif isinstance(tgt, ast.Attribute) and tgt.attr in KEYS_TO_EXTRACT:
+            # 形如 base.SOURCE_DATE = "..."
+            attr_name = tgt.attr
+        if not attr_name:
             continue
         try:
-            out[tgt.id] = ast.literal_eval(node.value)
+            out[attr_name] = ast.literal_eval(node.value)
         except (ValueError, SyntaxError):
-            # 非字面量（如调用、复合表达式），存为 source 文本
-            out[tgt.id] = ast.unparse(node.value)
+            out[attr_name] = ast.unparse(node.value)
     return out
 
 

@@ -18,6 +18,7 @@ import webbrowser
 from core.config import CONFIG
 from core.db import init_db
 from core.router import run_server
+from core.jobs import start_scheduler, run_job
 
 
 def _validate_legacy() -> None:
@@ -49,6 +50,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--host", default=CONFIG.server.get("host", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=CONFIG.server.get("port", 8787))
     parser.add_argument("--no-browser", action="store_true")
+    parser.add_argument("--no-scheduler", action="store_true",
+                        help="禁用后台调度器（仅启动 Web）")
+    parser.add_argument("--run-once", help="单次运行某任务后退出，例 --run-once health_check")
     args = parser.parse_args(argv)
 
     init_db()
@@ -56,6 +60,28 @@ def main(argv: list[str] | None = None) -> int:
 
     # 注册路由
     import modules  # noqa: F401
+
+    # 单次跑模式
+    if args.run_once:
+        result = run_job(args.run_once)
+        import json
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result.get("status") == "ok" else 2
+
+    # 启动后台调度器
+    if not args.no_scheduler:
+        try:
+            start_scheduler()
+            print(f"[调度] 已启动；任务定义见 /system 与 /#health")
+        except Exception as e:
+            print(f"[警告] 调度器启动失败：{e}")
+
+    # 启动时跑一次 health_check + 同步，让首页立刻有最新数据
+    try:
+        run_job("backfill_sync")
+        run_job("health_check")
+    except Exception as e:
+        print(f"[警告] 启动同步失败：{e}")
 
     if not args.no_browser and CONFIG.server.get("open_browser", True):
         _open_browser_later(f"http://{args.host}:{args.port}")

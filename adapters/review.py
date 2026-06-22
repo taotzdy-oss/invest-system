@@ -2,11 +2,19 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from adapters.files import read_csv_rows, read_text
 from core.config import CONFIG
+
+
+PREMIUM_FIELDS = [
+    "晋级日期", "溢价观察日", "代码", "名称", "晋级日收盘价", "次日开盘价",
+    "10点前最高价", "10点前最低价", "10点价",
+    "开盘溢价%", "10点前最高溢价%", "10点价溢价%", "10点前最低溢价%",
+    "形态", "结论", "数据来源",
+]
 
 
 LEDGER_FIELDS = [
@@ -86,6 +94,65 @@ def strategy_iteration_md() -> str:
 
 def review_template_md() -> str:
     return read_text(CONFIG.legacy_path("review_template_md"))
+
+
+def premium_rows() -> list[dict]:
+    p = CONFIG.legacy_path("review_ledger_csv").parent / "次日溢价跟踪.csv"
+    return read_csv_rows(p)
+
+
+def parse_review_report(md: str) -> dict:
+    """从复盘报告 Markdown 中抽取结构化字段。"""
+    out: dict = {
+        "basic": {},
+        "market": {},
+        "metrics": {},
+        "premium_review": [],
+        "buckets": {},
+        "experience": "",
+        "action": "",
+        "sources": [],
+    }
+    sections: dict[str, list[str]] = {}
+    current = "__head__"
+    for line in md.splitlines():
+        m = re.match(r"^##\s+(.*)$", line)
+        if m:
+            current = m.group(1).strip()
+            sections.setdefault(current, [])
+        else:
+            sections.setdefault(current, []).append(line)
+
+    def _section(name: str) -> list[str]:
+        return sections.get(name, [])
+
+    def _kv_lines(lines: list[str]) -> dict:
+        d = {}
+        for line in lines:
+            mm = re.match(r"^-\s+([^:：]+)[:：]\s*(.*)$", line.strip())
+            if mm:
+                d[mm.group(1).strip()] = mm.group(2).strip()
+        return d
+
+    out["basic"] = _kv_lines(_section("基本信息"))
+    out["market"] = _kv_lines(_section("市场实际情况"))
+    out["metrics_lines"] = [l.strip() for l in _section("指标统计") if l.strip()]
+    out["buckets_lines"] = [l.strip() for l in _section("晋级分层") if l.strip()]
+    out["premium_review_lines"] = [l.strip() for l in _section("次日溢价回看") if l.strip()]
+    out["experience"] = "\n".join(_section("策略差异与经验")).strip()
+    out["action"] = "\n".join(_section("策略动作")).strip()
+
+    # 数据来源 URL
+    for line in _section("基本信息") + sections.get("__head__", []):
+        urls = re.findall(r"https?://\S+", line)
+        out["sources"].extend(urls)
+
+    return out
+
+
+def latest_review_day() -> "ReviewDay | None":
+    days = list_review_days()
+    return days[0] if days else None
 
 
 def ledger_index() -> dict:

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.local.invest.app</string>
+  <!-- 注：macOS TCC 沙盒对桌面文件夹有保护。
+       这里用 /bin/zsh -c "cd ... && python3 app.py" 的方式，
+       让 shell 完成 cd（shell 在用户登录会话里有桌面访问权限），
+       python3 拿到相对路径就不会再触发 TCC 校验。 -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>-l</string>
+    <string>-c</string>
+    <string>cd "$HOME/invest-system" &amp;&amp; exec /usr/bin/python3 app.py --no-browser</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>15</integer>
+  <key>StandardOutPath</key>
+  <string>/tmp/invest-system.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/invest-system.err</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>TZ</key><string>Asia/Shanghai</string>
+    <key>LANG</key><string>zh_CN.UTF-8</string>
+  </dict>
+</dict>
+</plist>
